@@ -1,0 +1,96 @@
+﻿<Window x:Class="findandreplace.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:findandreplace"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800"
+        d:DataContext="{d:DesignInstance local:MainViewModel}"
+        >
+
+    <Window.Resources>
+        <Style TargetType="StackPanel">
+            <Setter Property="Background" Value="Aquamarine"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="Border">
+            <Setter Property="CornerRadius" Value="15"/>
+            <Setter Property="BorderThickness" Value="10"/>
+            <Setter Property="Background" Value="Aquamarine"/>
+            <Setter Property="Margin" Value="0"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5">
+          <StackPanel>
+              <TextBlock>Dir:</TextBlock>
+            <TextBox Text="{Binding Dir}"></TextBox>
+            </StackPanel>
+        </Border>
+        <Border Grid.Row="1" Grid.Column="1">
+            <StackPanel>
+                <TextBlock>Mask</TextBlock>
+                <TextBox Text="{Binding FileMask}"></TextBox>
+            </StackPanel>
+        </Border>
+        <Border Grid.Row="1" Grid.Column="2">
+            <StackPanel>
+                <TextBlock>Exclude</TextBlock>
+                <TextBox>*.dir</TextBox>
+            </StackPanel>
+        </Border>
+        <Border Grid.Row="2" Grid.Column="1">
+            <StackPanel>
+                <TextBox Text="{Binding FindText}"></TextBox>
+                <Button Command="{Binding FindCommand}"
+                        CommandParameter="{Binding FindText}"
+                    >FindText</Button>
+            </StackPanel>
+        </Border>
+        <Border Grid.Row="2" Grid.Column="2">
+            <StackPanel>
+                <TextBox>have told</TextBox>
+                <Button>Replace</Button>
+            </StackPanel>
+        </Border>
+        <Border Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5">
+            <StackPanel>
+                <TextBlock>Result:</TextBlock>
+                <TextBox>Results will be here</TextBox>
+            </StackPanel>
+        </Border>
+        <ListBox x:Name="ResultList" ItemsSource="{Binding Result}" ScrollViewer.PanningRatio="0"
+                 Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="3" Grid.RowSpan="2"
+        >
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="local:ResultItem">
+                    <DockPanel  Margin="0, 0, 30, 0">
+                        <TextBlock Text="{Binding FilePath}"/>
+                        <TextBlock  
+                            Margin="5, 0, 0, 0"
+                            Text="{Binding NumMatches}"
+                                   ></TextBlock>
+                    </DockPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</Window>
