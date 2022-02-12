@@ -78,7 +78,8 @@ namespace findandreplace
 		private FindResultItem FindInFile(string filePath)
 		{
 			var resultItem = new FindResultItem();
-			resultItem.IsSuccess = true;
+
+            resultItem.IsSuccess = true;
 			//resultItem.IncludeFilesWithoutMatches = IncludeFilesWithoutMatches;
 
 			resultItem.FileName = Path.GetFileName(filePath);
@@ -86,10 +87,10 @@ namespace findandreplace
 			resultItem.FileRelativePath = "." + filePath.Substring(Dir.Length);
 
             var fileText = File.ReadAllText(resultItem.FilePath);
-            if (fileText.Contains(FindText))
-            {
-                resultItem.NumMatches = 1;
-            }
+            //if (fileText.Contains(FindText))
+            //{
+                resultItem.NumMatches = fileText.Split(new string[] { FindText }, StringSplitOptions.None).Length -1;
+            //}
 
             return resultItem;
 		}
