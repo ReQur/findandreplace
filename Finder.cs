@@ -99,7 +99,7 @@ namespace findandreplace
                     string _find = string.Join("\r\n", findTextLines.ToArray());
                     string _fiound = string.Join("\r\n", fileLines.ToArray());
 
-                    resultItem.NumMatches += _fiound.Split(new string[] { _find }, StringSplitOptions.None).Length - 1;
+                    resultItem.NumMatches += _fiound.Contains( _find)?1:0;
 
                     fileLines.RemoveAt(0);
                     fileLines.Add(line);
