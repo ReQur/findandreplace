@@ -47,7 +47,27 @@ namespace findandreplace
                 _finder.FindText = FindText;
                 _finder.ExcludeFileMask = ExcludeMask;
                 _finder.InAllDirectories = AllDirSearch;
+                _finder.IsReplace = false;
                 
+                var res = _finder.Find();
+                foreach (var item in res.Items)
+                {
+                    Result.Add(item);
+                }
+            });
+            ReplaceCommand = new RelayCommand<string>(x =>
+            {
+                Result.Clear();
+                _finder = new Finder();
+                _finder.Dir = Dir;
+                _finder.FileMask = FileMask;
+                _finder.FindText = FindText;
+                _finder.ExcludeFileMask = ExcludeMask;
+                _finder.InAllDirectories = AllDirSearch;
+                _finder.IsReplace = true;
+                _finder.ReplaceText = ReplaceText;
+
+
                 var res = _finder.Find();
                 foreach (var item in res.Items)
                 {
@@ -56,6 +76,7 @@ namespace findandreplace
             });
         }
         public ICommand FindCommand { get; }
+        public ICommand ReplaceCommand { get; }
 
 
         private string _fileMask = "*.*";
@@ -126,6 +147,20 @@ namespace findandreplace
 
                 _findText = value;
                 OnPropertyChanged(nameof(_findText));
+            }
+        }
+        private string _replaceText = "";
+
+        public string ReplaceText
+        {
+            get => _replaceText;
+
+            set
+            {
+                if (_replaceText == value) return;
+
+                _replaceText = value;
+                OnPropertyChanged(nameof(_replaceText));
             }
         }
 

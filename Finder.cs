@@ -15,9 +15,11 @@ namespace findandreplace
         public string FileMask { get; set; }
         public string ExcludeFileMask { get; set; }
         public string FindText { get; set; }
+        public string ReplaceText { get; set; }
         public bool InAllDirectories { get; set; }
         public bool IncludeFilesWithoutMatches { get; set; }
         public bool IsSilent { get; set; }
+        public bool IsReplace { get; set; }
 
         public bool IsCancelRequested { get; set; }
         public class FindResultItem : ResultItem
@@ -67,7 +69,7 @@ namespace findandreplace
             foreach (string filePath in filesInDirectory)
             {
                 
-                var resultItem = FindInFile(filePath);
+                var resultItem = IsReplace?FindAndReplaceInFile(filePath):FindInFile(filePath);
 
                 //Skip files that don't have matches
                 if (resultItem.IncludeInResultsList)
@@ -94,6 +96,7 @@ namespace findandreplace
             List<string> fileLines = new List<string>(linesLength);
             foreach (string line in File.ReadLines(resultItem.FilePath))
             {
+                fileLines.Add(line);
                 if (fileLines.Count < linesLength)
                 {
                     fileLines.Add(line);
@@ -106,11 +109,76 @@ namespace findandreplace
                     resultItem.NumMatches += _fiound.Contains(_find) ? 1 : 0;
 
                     fileLines.RemoveAt(0);
-                    fileLines.Add(line);
                 }
             }
             
             return resultItem;
 		}
-	}
+
+        private FindResultItem FindAndReplaceInFile(string filePath)
+        {
+            var resultItem = new FindResultItem();
+
+            resultItem.IsSuccess = true;
+
+            resultItem.FileName = Path.GetFileName(filePath);
+            resultItem.FilePath = filePath;
+            resultItem.FileRelativePath = "." + filePath.Substring(Dir.Length);
+
+            List<string> findTextLines = FindText.Split("\r\n").ToList();
+            var linesLength = findTextLines.Count;
+            List<string> fileLines = new List<string>(linesLength);
+            using (StreamWriter sw = File.CreateText(filePath + ".FNRTEMP"))
+            {
+                foreach (string line in File.ReadLines(resultItem.FilePath))
+                {
+                    fileLines.Add(line);
+                    if (fileLines.Count < linesLength)
+                    {
+                      fileLines.Add(line);
+                    }
+                    if (fileLines.Count == linesLength)
+                    {
+                        string _find = string.Join("\r\n", findTextLines.ToArray());
+                        string _found = string.Join("\r\n", fileLines.ToArray());
+
+
+                        if (_found.Contains(_find))
+                        {
+                            resultItem.NumMatches += 1;
+                            var changed = _found.Replace(_find, ReplaceText);
+                            var changedSplit = changed.Split("\r\n");
+                            for (int i = 0; i < linesLength; i++)
+                            {
+                                fileLines[i] = changedSplit[i];
+                            }
+                        }
+
+                        sw.WriteLine(fileLines[0]);
+                        fileLines.RemoveAt(0);
+                    }
+
+                }
+
+                for (int i = 1; i < linesLength; i++)
+                {
+                    sw.WriteLine(fileLines[i]);
+                }
+            }
+
+            if (resultItem.NumMatches != 0)
+            {
+                File.Delete(filePath);
+                File.Move(filePath + ".FNRTEMP", filePath);
+                File.Delete(filePath + ".FNRTEMP");
+            }
+            else
+            {
+                File.Delete(filePath + ".FNRTEMP");
+            }
+
+            return resultItem;
+		}
+
+    }
 }
