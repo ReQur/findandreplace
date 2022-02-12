@@ -15,9 +15,11 @@ namespace findandreplace
         public string FileMask { get; set; }
         public string ExcludeFileMask { get; set; }
         public string FindText { get; set; }
+        public string ReplaceText { get; set; }
         public bool InAllDirectories { get; set; }
         public bool IncludeFilesWithoutMatches { get; set; }
         public bool IsSilent { get; set; }
+        public bool IsReplace { get; set; }
 
         public bool IsCancelRequested { get; set; }
         public class FindResultItem : ResultItem
@@ -112,5 +114,56 @@ namespace findandreplace
             
             return resultItem;
 		}
-	}
+
+        private FindResultItem FindAndReplaceInFile(string filePath)
+        {
+            var resultItem = new FindResultItem();
+
+            resultItem.IsSuccess = true;
+
+            resultItem.FileName = Path.GetFileName(filePath);
+            resultItem.FilePath = filePath;
+            resultItem.FileRelativePath = "." + filePath.Substring(Dir.Length);
+
+            List<string> findTextLines = FindText.Split("\r\n").ToList();
+            var linesLength = findTextLines.Count;
+            List<string> fileLines = new List<string>(linesLength);
+            using (StreamWriter sw = File.CreateText(filePath + ".FNRTEMP"))
+            {
+                foreach (string line in File.ReadLines(resultItem.FilePath))
+                {
+                    if (fileLines.Count == linesLength)
+                    {
+                        string _find = string.Join("\r\n", findTextLines.ToArray());
+                        string _found = string.Join("\r\n", fileLines.ToArray());
+
+
+                        if (_found.Contains(_find))
+                        {
+                            resultItem.NumMatches += 1;
+                            var changed = _found.Replace(_find, ReplaceText);
+                            var changedSplit = changed.Split("\r\n");
+                            for (int i = 0; i < linesLength - 1; i++)
+                            {
+                                fileLines[i] = changedSplit[i];
+                            }
+                        }
+
+                        sw.WriteLine(fileLines[0]);
+                        fileLines.RemoveAt(0);
+                        fileLines.Add(line);
+                    }
+                    else
+                    {
+                        fileLines.Add(line);
+                    }
+                }
+            }
+
+            File.Delete(filePath);
+            File.Move(filePath + ".FNRTEMP", filePath);
+
+            return resultItem;
+        }
+    }
 }
