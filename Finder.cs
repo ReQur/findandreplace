@@ -96,8 +96,8 @@ namespace findandreplace
             {
                 if (fileLines.Count == linesLength)
                 {
-                    string _find = string.Join(" ", findTextLines.ToArray());
-                    string _fiound = string.Join(" ", fileLines.ToArray());
+                    string _find = string.Join("\r\n", findTextLines.ToArray());
+                    string _fiound = string.Join("\r\n", fileLines.ToArray());
 
                     resultItem.NumMatches += _fiound.Split(new string[] { _find }, StringSplitOptions.None).Length - 1;
 
