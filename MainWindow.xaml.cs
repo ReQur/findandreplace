@@ -45,13 +45,14 @@ namespace findandreplace
                 _finder.Dir = Dir;
                 _finder.FileMask = FileMask;
                 _finder.FindText = FindText;
+                _finder.ExcludeFileMask = ExcludeMask;
                 
                 var res = _finder.Find();
                 foreach (var item in res.Items)
                 {
                     Result.Add(item);
                 }
-            }, x => string.IsNullOrWhiteSpace(x) == false);
+            });
         }
         public ICommand FindCommand { get; }
 
@@ -69,6 +70,21 @@ namespace findandreplace
                 OnPropertyChanged(nameof(_fileMask));
             }
         }
+
+        private string _exludeMask = "*.dll, *.exe";
+        public string ExcludeMask
+        {
+            get => _exludeMask;
+
+            set
+            {
+                if (_exludeMask == value) return;
+
+                _exludeMask = value;
+                OnPropertyChanged(nameof(_exludeMask));
+            }
+        }
+
         private string _dir = "";
         public string Dir
         {

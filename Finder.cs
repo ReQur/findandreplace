@@ -32,10 +32,30 @@ namespace findandreplace
         {
         }
 
+        private bool checkExlсudes(string name)
+        {
+            if (string.IsNullOrWhiteSpace(ExcludeFileMask))
+                return true;
+            string[] excludeMask = ExcludeFileMask.Split(',');
+            var excludeFlag = excludeMask.Length;
+            foreach (var mask in excludeMask)
+            {
+                if (mask[0] == ' ') mask.TrimStart(' ');
+                Regex maskExp = new Regex('.'+mask.Replace(".", "\\."));
+
+                if (!maskExp.IsMatch(name))
+                {
+                    excludeFlag--;
+                }
+            }
+
+            return excludeFlag == 0;
+        }
+
         public FindResult Find()
         {
 
-            string[] filesInDirectory = Directory.GetFiles(Dir, FileMask, SearchOption.AllDirectories).ToArray();
+            string[] filesInDirectory = Directory.GetFiles(Dir, FileMask, SearchOption.AllDirectories).Where(checkExlсudes).ToArray();
 
             var resultItems = new List<FindResultItem>();
 

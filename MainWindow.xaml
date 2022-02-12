@@ -54,7 +54,7 @@
         <Border Grid.Row="1" Grid.Column="2">
             <StackPanel>
                 <TextBlock>Exclude</TextBlock>
-                <TextBox>*.dir</TextBox>
+                <TextBox Text="{Binding ExcludeMask}"></TextBox>
             </StackPanel>
         </Border>
         <Border Grid.Row="2" Grid.Column="1">
