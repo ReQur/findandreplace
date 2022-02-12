@@ -65,7 +65,12 @@
         </Border>
         <Border Grid.Row="2" Grid.Column="1">
             <StackPanel>
-                <TextBox Text="{Binding FindText}"></TextBox>
+                <TextBox TextWrapping="Wrap" AcceptsReturn="True"
+                         AcceptsTab="True" 
+                      Text="{Binding FindText}"
+                    >
+
+                </TextBox>
                 <Button Command="{Binding FindCommand}"
                         CommandParameter="{Binding FindText}"
                     >FindText</Button>
