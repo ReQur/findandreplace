@@ -84,17 +84,32 @@ namespace findandreplace
 			var resultItem = new FindResultItem();
 
             resultItem.IsSuccess = true;
-			//resultItem.IncludeFilesWithoutMatches = IncludeFilesWithoutMatches;
 
 			resultItem.FileName = Path.GetFileName(filePath);
 			resultItem.FilePath = filePath;
 			resultItem.FileRelativePath = "." + filePath.Substring(Dir.Length);
 
-            var fileText = File.ReadAllText(resultItem.FilePath);
+            List<string> findTextLines = FindText.Split("\r\n").ToList();
+            var linesLength = findTextLines.Count;
+            List<string> fileLines = new List<string>(linesLength);
+            foreach (string line in File.ReadLines(resultItem.FilePath))
+            {
+                if (fileLines.Count == linesLength)
+                {
+                    string _find = string.Join(" ", findTextLines.ToArray());
+                    string _fiound = string.Join(" ", fileLines.ToArray());
+
+                    resultItem.NumMatches += _fiound.Split(new string[] { _find }, StringSplitOptions.None).Length - 1;
+
+                    fileLines.RemoveAt(0);
+                    fileLines.Add(line);
+                }
+                else
+                {
+                    fileLines.Add(line);
+                }
+            }
             
-            resultItem.NumMatches = fileText.Split(new string[] { FindText }, StringSplitOptions.None).Length -1;
-
-
             return resultItem;
 		}
 	}
