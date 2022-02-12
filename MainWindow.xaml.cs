@@ -46,6 +46,7 @@ namespace findandreplace
                 _finder.FileMask = FileMask;
                 _finder.FindText = FindText;
                 _finder.ExcludeFileMask = ExcludeMask;
+                _finder.InAllDirectories = AllDirSearch;
                 
                 var res = _finder.Find();
                 foreach (var item in res.Items)
@@ -82,6 +83,20 @@ namespace findandreplace
 
                 _exludeMask = value;
                 OnPropertyChanged(nameof(_exludeMask));
+            }
+        }
+
+        private bool _allDirSearch = true;
+        public bool AllDirSearch
+        {
+            get =>_allDirSearch;
+
+            set
+            {
+                if (_allDirSearch == value) return;
+
+                _allDirSearch = value;
+                OnPropertyChanged(nameof(_allDirSearch));
             }
         }
 

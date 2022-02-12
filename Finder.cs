@@ -15,6 +15,7 @@ namespace findandreplace
         public string FileMask { get; set; }
         public string ExcludeFileMask { get; set; }
         public string FindText { get; set; }
+        public bool InAllDirectories { get; set; }
         public bool IncludeFilesWithoutMatches { get; set; }
         public bool IsSilent { get; set; }
 
@@ -55,7 +56,10 @@ namespace findandreplace
         public FindResult Find()
         {
 
-            string[] filesInDirectory = Directory.GetFiles(Dir, FileMask, SearchOption.AllDirectories).Where(checkExlсudes).ToArray();
+            string[] filesInDirectory = Directory.GetFiles(Dir, 
+                                                     FileMask, 
+                                                                InAllDirectories?SearchOption.AllDirectories:SearchOption.TopDirectoryOnly)
+                                                                                .Where(checkExlсudes).ToArray();
 
             var resultItems = new List<FindResultItem>();
 
@@ -87,10 +91,9 @@ namespace findandreplace
 			resultItem.FileRelativePath = "." + filePath.Substring(Dir.Length);
 
             var fileText = File.ReadAllText(resultItem.FilePath);
-            //if (fileText.Contains(FindText))
-            //{
-                resultItem.NumMatches = fileText.Split(new string[] { FindText }, StringSplitOptions.None).Length -1;
-            //}
+            
+            resultItem.NumMatches = fileText.Split(new string[] { FindText }, StringSplitOptions.None).Length -1;
+
 
             return resultItem;
 		}

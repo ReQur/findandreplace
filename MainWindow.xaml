@@ -40,10 +40,16 @@
         </Grid.ColumnDefinitions>
 
         <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5">
-          <StackPanel>
-              <TextBlock>Dir:</TextBlock>
-            <TextBox Text="{Binding Dir}"></TextBox>
-            </StackPanel>
+            <DockPanel>
+                <StackPanel>
+                    <TextBlock>Search in all directories:</TextBlock>
+                    <CheckBox IsChecked="{Binding AllDirSearch}"></CheckBox>
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock>Dir:</TextBlock>
+                    <TextBox Text="{Binding Dir}"></TextBox>
+                </StackPanel>
+            </DockPanel>
         </Border>
         <Border Grid.Row="1" Grid.Column="1">
             <StackPanel>
