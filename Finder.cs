@@ -94,18 +94,18 @@ namespace findandreplace
             List<string> fileLines = new List<string>(linesLength);
             foreach (string line in File.ReadLines(resultItem.FilePath))
             {
+                if (fileLines.Count < linesLength)
+                {
+                    fileLines.Add(line);
+                }
                 if (fileLines.Count == linesLength)
                 {
                     string _find = string.Join("\r\n", findTextLines.ToArray());
                     string _fiound = string.Join("\r\n", fileLines.ToArray());
 
-                    resultItem.NumMatches += _fiound.Contains( _find)?1:0;
+                    resultItem.NumMatches += _fiound.Contains(_find) ? 1 : 0;
 
                     fileLines.RemoveAt(0);
-                    fileLines.Add(line);
-                }
-                else
-                {
                     fileLines.Add(line);
                 }
             }
