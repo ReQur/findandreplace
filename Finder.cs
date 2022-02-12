@@ -69,7 +69,7 @@ namespace findandreplace
             foreach (string filePath in filesInDirectory)
             {
                 
-                var resultItem = FindInFile(filePath);
+                var resultItem = IsReplace?FindAndReplaceInFile(filePath):FindInFile(filePath);
 
                 //Skip files that don't have matches
                 if (resultItem.IncludeInResultsList)
@@ -96,6 +96,7 @@ namespace findandreplace
             List<string> fileLines = new List<string>(linesLength);
             foreach (string line in File.ReadLines(resultItem.FilePath))
             {
+                fileLines.Add(line);
                 if (fileLines.Count < linesLength)
                 {
                     fileLines.Add(line);
@@ -108,7 +109,6 @@ namespace findandreplace
                     resultItem.NumMatches += _fiound.Contains(_find) ? 1 : 0;
 
                     fileLines.RemoveAt(0);
-                    fileLines.Add(line);
                 }
             }
             
@@ -132,6 +132,11 @@ namespace findandreplace
             {
                 foreach (string line in File.ReadLines(resultItem.FilePath))
                 {
+                    fileLines.Add(line);
+                    if (fileLines.Count < linesLength)
+                    {
+                      fileLines.Add(line);
+                    }
                     if (fileLines.Count == linesLength)
                     {
                         string _find = string.Join("\r\n", findTextLines.ToArray());
@@ -143,7 +148,7 @@ namespace findandreplace
                             resultItem.NumMatches += 1;
                             var changed = _found.Replace(_find, ReplaceText);
                             var changedSplit = changed.Split("\r\n");
-                            for (int i = 0; i < linesLength - 1; i++)
+                            for (int i = 0; i < linesLength; i++)
                             {
                                 fileLines[i] = changedSplit[i];
                             }
@@ -151,17 +156,26 @@ namespace findandreplace
 
                         sw.WriteLine(fileLines[0]);
                         fileLines.RemoveAt(0);
-                        fileLines.Add(line);
                     }
-                    else
-                    {
-                        fileLines.Add(line);
-                    }
+
+                }
+
+                for (int i = 1; i < linesLength; i++)
+                {
+                    sw.WriteLine(fileLines[i]);
                 }
             }
 
-            File.Delete(filePath);
-            File.Move(filePath + ".FNRTEMP", filePath);
+            if (resultItem.NumMatches != 0)
+            {
+                File.Delete(filePath);
+                File.Move(filePath + ".FNRTEMP", filePath);
+                File.Delete(filePath + ".FNRTEMP");
+            }
+            else
+            {
+                File.Delete(filePath + ".FNRTEMP");
+            }
 
             return resultItem;
         }
