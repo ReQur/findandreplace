@@ -15,7 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using GalaSoft.MvvmLight.CommandWpf;
+using CommunityToolkit.Mvvm.Input;
 
 namespace findandreplace
 {
@@ -38,6 +38,17 @@ namespace findandreplace
         {
             Result = new ObservableCollection<ResultItem>();
 
+            BrowseCommand = new RelayCommand<string>(x =>
+            {
+                var dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog();
+                dialog.Description = "Choose directory for search";
+                dialog.UseDescriptionForTitle = true;
+                var result = dialog.ShowDialog();
+                if (result == true)
+                {
+                    Dir = dialog.SelectedPath;
+                }
+            });
             FindCommand = new RelayCommand<string>(x =>
             {
                 Result.Clear();
@@ -47,7 +58,27 @@ namespace findandreplace
                 _finder.FindText = FindText;
                 _finder.ExcludeFileMask = ExcludeMask;
                 _finder.InAllDirectories = AllDirSearch;
+                _finder.IsReplace = false;
                 
+                var res = _finder.Find();
+                foreach (var item in res.Items)
+                {
+                    Result.Add(item);
+                }
+            });
+            ReplaceCommand = new RelayCommand<string>(x =>
+            {
+                Result.Clear();
+                _finder = new Finder();
+                _finder.Dir = Dir;
+                _finder.FileMask = FileMask;
+                _finder.FindText = FindText;
+                _finder.ExcludeFileMask = ExcludeMask;
+                _finder.InAllDirectories = AllDirSearch;
+                _finder.IsReplace = true;
+                _finder.ReplaceText = ReplaceText;
+
+
                 var res = _finder.Find();
                 foreach (var item in res.Items)
                 {
@@ -56,6 +87,8 @@ namespace findandreplace
             });
         }
         public ICommand FindCommand { get; }
+        public ICommand ReplaceCommand { get; }
+        public ICommand BrowseCommand { get; }
 
 
         private string _fileMask = "*.*";
@@ -110,7 +143,7 @@ namespace findandreplace
                 if (_dir == value) return;
 
                 _dir = value;
-                OnPropertyChanged(nameof(_dir));
+                OnPropertyChanged(nameof(Dir));
             }
         }
 
@@ -126,6 +159,20 @@ namespace findandreplace
 
                 _findText = value;
                 OnPropertyChanged(nameof(_findText));
+            }
+        }
+        private string _replaceText = "";
+
+        public string ReplaceText
+        {
+            get => _replaceText;
+
+            set
+            {
+                if (_replaceText == value) return;
+
+                _replaceText = value;
+                OnPropertyChanged(nameof(_replaceText));
             }
         }
 

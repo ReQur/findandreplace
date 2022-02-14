@@ -52,7 +52,10 @@
                 </StackPanel>
                 <StackPanel>
                     <TextBlock>Dir:</TextBlock>
-                    <TextBox Text="{Binding Dir}"></TextBox>
+                    <DockPanel>
+                        <TextBox Text="{Binding Dir}"></TextBox>
+                        <Button Command="{Binding BrowseCommand}">Browse</Button>
+                    </DockPanel>
                 </StackPanel>
             </DockPanel>
         </Border>
@@ -90,8 +93,11 @@
                     AcceptsTab="True"
                     MinWidth="80"
                     MinHeight="50"
-                    >have told</TextBox>
-                <Button>Replace</Button>
+                    Text="{Binding ReplaceText}"
+                ></TextBox>
+                <Button Command="{Binding ReplaceCommand}"
+                        CommandParameter="{Binding ReplaceText}"
+                >Replace</Button>
             </StackPanel>
         </Border>
         <Border Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5">
