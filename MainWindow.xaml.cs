@@ -51,6 +51,7 @@ namespace findandreplace
             });
             FindCommand = new RelayCommand<string>(x =>
             {
+                if (string.IsNullOrWhiteSpace(Dir)) return;
                 Result.Clear();
                 _finder = new Finder();
                 _finder.Dir = Dir;
@@ -68,6 +69,7 @@ namespace findandreplace
             });
             ReplaceCommand = new RelayCommand<string>(x =>
             {
+                if(string.IsNullOrWhiteSpace(Dir)) return;
                 Result.Clear();
                 _finder = new Finder();
                 _finder.Dir = Dir;
@@ -101,21 +103,21 @@ namespace findandreplace
                 if (_fileMask == value) return;
 
                 _fileMask = value;
-                OnPropertyChanged(nameof(_fileMask));
+                OnPropertyChanged(nameof(FileMask));
             }
         }
 
-        private string _exludeMask = "*.dll, *.exe";
+        private string _excludeMask = "*.dll, *.exe";
         public string ExcludeMask
         {
-            get => _exludeMask;
+            get => _excludeMask;
 
             set
             {
-                if (_exludeMask == value) return;
+                if (_excludeMask == value) return;
 
-                _exludeMask = value;
-                OnPropertyChanged(nameof(_exludeMask));
+                _excludeMask = value;
+                OnPropertyChanged(nameof(ExcludeMask));
             }
         }
 
@@ -129,7 +131,7 @@ namespace findandreplace
                 if (_allDirSearch == value) return;
 
                 _allDirSearch = value;
-                OnPropertyChanged(nameof(_allDirSearch));
+                OnPropertyChanged(nameof(AllDirSearch));
             }
         }
 
@@ -158,7 +160,7 @@ namespace findandreplace
                 if (_findText == value) return;
 
                 _findText = value;
-                OnPropertyChanged(nameof(_findText));
+                OnPropertyChanged(nameof(FindText));
             }
         }
         private string _replaceText = "";
@@ -172,7 +174,7 @@ namespace findandreplace
                 if (_replaceText == value) return;
 
                 _replaceText = value;
-                OnPropertyChanged(nameof(_replaceText));
+                OnPropertyChanged(nameof(ReplaceText));
             }
         }
 

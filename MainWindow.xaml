@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:findandreplace"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
+        Title="MainWindow" Height="600" Width="900"
         d:DataContext="{d:DesignInstance local:MainViewModel}"
         >
 
-    <Window.Resources>
+    <!--<Window.Resources>
         <Style TargetType="StackPanel">
             <Setter Property="Background" Value="Aquamarine"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -26,97 +26,84 @@
             <Setter Property="Background" Value="Aquamarine"/>
             <Setter Property="Margin" Value="0"/>
         </Style>
-    </Window.Resources>
+    </Window.Resources>-->
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="0.5*"/>
-            <RowDefinition Height="1.5*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="0.04*"/>
+            <RowDefinition Height="0.08*"/>
+            <RowDefinition Height="0.08*"/>
+            <RowDefinition Height="0.04*"/>
+            <RowDefinition Height="0.16*"/>
+            <RowDefinition Height="0.06*"/>
+            <RowDefinition Height="0.04*"/>
+            <RowDefinition Height="0.44*"/>
+            <RowDefinition Height="0.04*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.5*"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="0.5*"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5">
-            <DockPanel>
-                <StackPanel>
-                    <TextBlock>Search in all directories:</TextBlock>
-                    <CheckBox IsChecked="{Binding AllDirSearch}"></CheckBox>
-                </StackPanel>
-                <StackPanel>
-                    <TextBlock>Dir:</TextBlock>
-                    <DockPanel>
-                        <TextBox Text="{Binding Dir}"></TextBox>
-                        <Button Command="{Binding BrowseCommand}">Browse</Button>
-                    </DockPanel>
-                </StackPanel>
-            </DockPanel>
-        </Border>
-        <Border Grid.Row="1" Grid.Column="1">
-            <DockPanel>
-                <TextBlock>Mask</TextBlock>
-                <TextBox Text="{Binding FileMask}"></TextBox>
-            </DockPanel>
-        </Border>
-        <Border Grid.Row="1" Grid.Column="2">
-            <DockPanel>
-                <TextBlock>Exclude</TextBlock>
-                <TextBox Text="{Binding ExcludeMask}"></TextBox>
-            </DockPanel>
-        </Border>
-        <Border Grid.Row="2" Grid.Column="1">
-            <StackPanel>
-                <TextBox TextWrapping="Wrap" AcceptsReturn="True"
-                         AcceptsTab="True" 
-                         MinWidth="80"
-                         MinHeight="50"
-                      Text="{Binding FindText}"
-                    >
+   
+        <TextBlock Grid.Row="0" Grid.Column="1">Dir:</TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" FontSize="18" Text="{Binding Dir}"></TextBox>
+        <Button Grid.Row="1" Grid.Column="4" Command="{Binding BrowseCommand}">Browse</Button>
 
-                </TextBox>
-                <Button Command="{Binding FindCommand}"
-                        CommandParameter="{Binding FindText}"
-                    >FindText</Button>
-            </StackPanel>
-        </Border>
-        <Border Grid.Row="2" Grid.Column="2">
-            <StackPanel>
-                <TextBox
+        <TextBlock Grid.Row="2" Grid.Column="1">Search in all directories:</TextBlock>
+        <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding AllDirSearch}" VerticalAlignment="Bottom"></CheckBox>
+
+
+
+        <TextBlock Grid.Row="1" Grid.Column="5" HorizontalAlignment="Right" VerticalAlignment="Top">File Mask</TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="6" HorizontalAlignment="Stretch" VerticalAlignment="Top" Text="{Binding FileMask}"></TextBox>
+
+
+        <TextBlock Grid.Row="1" Grid.Column="5" HorizontalAlignment="Right" VerticalAlignment="Bottom" >Exclude</TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="6" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Text="{Binding ExcludeMask}"></TextBox>
+
+        <TextBlock Grid.Row="3" Grid.Column="1" HorizontalAlignment="left" VerticalAlignment="Bottom" >Find:</TextBlock>
+        <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2"   
+                 TextWrapping="Wrap" AcceptsReturn="True"
+                 AcceptsTab="True" 
+                 Text="{Binding FindText}"
+        >
+        </TextBox>
+        <Button Grid.Row="5" Grid.Column="2" 
+                            Command="{Binding FindCommand}"
+                            CommandParameter="{Binding Dir}"
+        >FindText</Button>
+
+        <TextBlock Grid.Row="3" Grid.Column="5" HorizontalAlignment="left" VerticalAlignment="Bottom" >Replace to:</TextBlock>
+        <TextBox Grid.Row="4" Grid.Column="5" Grid.ColumnSpan="2"
                     TextWrapping="NoWrap" AcceptsReturn="True"
                     AcceptsTab="True"
-                    MinWidth="80"
-                    MinHeight="50"
                     Text="{Binding ReplaceText}"
-                ></TextBox>
-                <Button Command="{Binding ReplaceCommand}"
-                        CommandParameter="{Binding ReplaceText}"
-                >Replace</Button>
-            </StackPanel>
-        </Border>
-        <Border Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5">
-            <StackPanel>
-                <TextBlock>Result:</TextBlock>
-                <TextBox>Results will be here</TextBox>
-            </StackPanel>
-        </Border>
-        <ListBox x:Name="ResultList" ItemsSource="{Binding Result}" ScrollViewer.PanningRatio="0"
-                 Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="3" Grid.RowSpan="2"
-        >
+        ></TextBox>
+        <Button Grid.Row="5" Grid.Column="5"
+                Command="{Binding ReplaceCommand}"
+                CommandParameter="{Binding Dir}"
+        >Replace</Button>
+
+
+        <TextBlock Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom">Result:</TextBlock>
+        <ListBox x:Name="ResultList" ItemsSource="{Binding Result}" ScrollViewer.PanningRatio="0" 
+                 Grid.Column="1" Grid.ColumnSpan="6" Grid.Row="7" HorizontalAlignment="Stretch">
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="local:ResultItem">
-                    <DockPanel  Margin="0, 0, 30, 0">
-                        <TextBlock Text="{Binding FilePath}"/>
-                        <TextBlock  
-                            Margin="5, 0, 0, 0"
-                            Text="{Binding NumMatches}"
-                                   ></TextBlock>
+                    <DockPanel>
+                        <TextBlock 
+                            TextAlignment="Left"
+                            Text="{Binding FilePath}"/>
+                        <TextBlock
+                            HorizontalAlignment="Right" Margin="20, 0, 0, 0"
+                            Text="{Binding NumMatches}"/>
                     </DockPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
