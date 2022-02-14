@@ -104,9 +104,9 @@ namespace findandreplace
                 if (fileLines.Count == linesLength)
                 {
                     string _find = string.Join("\r\n", findTextLines.ToArray());
-                    string _fiound = string.Join("\r\n", fileLines.ToArray());
+                    string _found = string.Join("\r\n", fileLines.ToArray());
 
-                    resultItem.NumMatches += _fiound.Contains(_find) ? 1 : 0;
+                    resultItem.NumMatches += _found.Contains(_find) ? 1 : 0;
 
                     fileLines.RemoveAt(0);
                 }
