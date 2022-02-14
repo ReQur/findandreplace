@@ -15,7 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using GalaSoft.MvvmLight.CommandWpf;
+using CommunityToolkit.Mvvm.Input;
 
 namespace findandreplace
 {
@@ -38,6 +38,17 @@ namespace findandreplace
         {
             Result = new ObservableCollection<ResultItem>();
 
+            BrowseCommand = new RelayCommand<string>(x =>
+            {
+                var dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog();
+                dialog.Description = "Choose directory for search";
+                dialog.UseDescriptionForTitle = true;
+                var result = dialog.ShowDialog();
+                if (result == true)
+                {
+                    Dir = dialog.SelectedPath;
+                }
+            });
             FindCommand = new RelayCommand<string>(x =>
             {
                 Result.Clear();
@@ -77,6 +88,7 @@ namespace findandreplace
         }
         public ICommand FindCommand { get; }
         public ICommand ReplaceCommand { get; }
+        public ICommand BrowseCommand { get; }
 
 
         private string _fileMask = "*.*";
@@ -131,7 +143,7 @@ namespace findandreplace
                 if (_dir == value) return;
 
                 _dir = value;
-                OnPropertyChanged(nameof(_dir));
+                OnPropertyChanged(nameof(Dir));
             }
         }
 

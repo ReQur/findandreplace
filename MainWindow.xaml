@@ -52,7 +52,10 @@
                 </StackPanel>
                 <StackPanel>
                     <TextBlock>Dir:</TextBlock>
-                    <TextBox Text="{Binding Dir}"></TextBox>
+                    <DockPanel>
+                        <TextBox Text="{Binding Dir}"></TextBox>
+                        <Button Command="{Binding BrowseCommand}">Browse</Button>
+                    </DockPanel>
                 </StackPanel>
             </DockPanel>
         </Border>
