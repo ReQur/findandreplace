@@ -39,7 +39,7 @@ namespace findandreplace
                     Dir = dialog.SelectedPath;
                 }
             });
-            FindCommand = new RelayCommand<string>(x =>
+            StartFinderCommand = new RelayCommand<string>(x =>
             {
                 if (string.IsNullOrWhiteSpace(Dir)) return;
                 Result.Clear();
@@ -51,54 +51,15 @@ namespace findandreplace
                 _finder.FindText = FindText;
                 _finder.ExcludeFileMask = ExcludeMask;
                 _finder.InAllDirectories = AllDirSearch;
-                _finder.IsReplace = false;
-
- 
-                var context = TaskScheduler.FromCurrentSynchronizationContext();
-                ButtonsUnlock = false;
-                Task.Run(() => _finder.GetFiles()).ContinueWith(res =>
+                if (x == "Find")
                 {
-                    App.Current.Dispatcher.Invoke((Action)delegate
-                    {
-                        ItemsTotal = res.Result.Length;
-                    });
-                    foreach (var item in _finder.Find(res.Result))
-                    {
-                        if (item != null)
-                        {
-                            App.Current.Dispatcher.Invoke((Action)delegate
-                            {
-                                Result.Add(item);
-                                ItemsProcessed++;
-                            });
-                        }
-                        else
-                        {
-                            App.Current.Dispatcher.Invoke((Action)delegate
-                            {
-                                ItemsProcessed++;
-                            });
-                        }
-                    }
-                }).ContinueWith(_ =>
+                    _finder.IsReplace = false;
+                }
+                else if (x == "Replace")
                 {
-                    ButtonsUnlock = true;
-                }, context);
-            });
-            ReplaceCommand = new RelayCommand<string>(x =>
-            {
-                if(string.IsNullOrWhiteSpace(Dir)) return;
-                Result.Clear();
-                ItemsTotal = 0;
-                ItemsProcessed = 0;
-                _finder = new Finder();
-                _finder.Dir = Dir;
-                _finder.FileMask = FileMask;
-                _finder.FindText = FindText;
-                _finder.ExcludeFileMask = ExcludeMask;
-                _finder.InAllDirectories = AllDirSearch;
-                _finder.IsReplace = true;
-                _finder.ReplaceText = ReplaceText;
+                    _finder.IsReplace = true;
+                    _finder.ReplaceText = ReplaceText;
+                }
 
                 var context = TaskScheduler.FromCurrentSynchronizationContext();
                 ButtonsUnlock = false;
@@ -131,9 +92,10 @@ namespace findandreplace
                     ButtonsUnlock = true;
                 }, context);
             });
+            
         }
-        public ICommand FindCommand { get; }
-        public ICommand ReplaceCommand { get; }
+
+        public ICommand StartFinderCommand { get; }
         public ICommand BrowseCommand { get; }
         
         private string _fileMask = "*.*";

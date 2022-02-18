@@ -76,7 +76,8 @@
         >
         </TextBox>
         <Button Grid.Row="5" Grid.Column="2" 
-                            Command="{Binding FindCommand}"
+                            Command="{Binding StartFinderCommand}"
+                            CommandParameter="Find"
                             IsEnabled="{Binding ButtonsUnlock}"
         >FindText</Button>
 
@@ -87,7 +88,8 @@
                     Text="{Binding ReplaceText}"
         ></TextBox>
         <Button Grid.Row="5" Grid.Column="5"
-                Command="{Binding ReplaceCommand}"
+                Command="{Binding StartFinderCommand}"
+                CommandParameter="Replace"
                 IsEnabled="{Binding ButtonsUnlock}"
         >Replace</Button>
 
