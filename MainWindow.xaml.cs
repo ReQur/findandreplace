@@ -60,12 +60,17 @@ namespace findandreplace
                 _finder.ExcludeFileMask = ExcludeMask;
                 _finder.InAllDirectories = AllDirSearch;
                 _finder.IsReplace = false;
-                
-                var res = _finder.Find();
-                foreach (var item in res.Items)
+
+                var context = TaskScheduler.FromCurrentSynchronizationContext();
+                Task.Run(() => _finder.Find()).ContinueWith(res =>
                 {
-                    Result.Add(item);
-                }
+                    foreach (var item in res.Result.Items)
+                    {
+                        Result.Add(item);
+                    }
+                }, context);
+                
+
             });
             ReplaceCommand = new RelayCommand<string>(x =>
             {
@@ -81,11 +86,14 @@ namespace findandreplace
                 _finder.ReplaceText = ReplaceText;
 
 
-                var res = _finder.Find();
-                foreach (var item in res.Items)
+                var context = TaskScheduler.FromCurrentSynchronizationContext();
+                Task.Run(() => _finder.Find()).ContinueWith(res =>
                 {
-                    Result.Add(item);
-                }
+                    foreach (var item in res.Result.Items)
+                    {
+                        Result.Add(item);
+                    }
+                }, context);
             });
         }
         public ICommand FindCommand { get; }
