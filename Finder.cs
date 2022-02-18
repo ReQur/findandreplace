@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -39,7 +40,15 @@ namespace findandreplace
         {
             if (string.IsNullOrWhiteSpace(ExcludeFileMask))
                 return true;
-            string[] excludeMask = ExcludeFileMask.Split(',');
+            string[] excludeMask;
+            try
+            {
+                excludeMask = ExcludeFileMask.Split(',');
+            }
+            catch (Exception e)
+            {
+                return true;
+            }
             var excludeFlag = excludeMask.Length;
             foreach (var mask in excludeMask)
             {
@@ -55,16 +64,16 @@ namespace findandreplace
             return excludeFlag == 0;
         }
 
-        public IEnumerable<ResultItem> Find()
+        public string[] GetFiles()
         {
+            return Directory.GetFiles(Dir,
+                    FileMask,
+                                InAllDirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
+                                .Where(checkExlсudes).ToArray();
+        }
 
-            string[] filesInDirectory = Directory.GetFiles(Dir, 
-                                                     FileMask, 
-                                                                InAllDirectories?SearchOption.AllDirectories:SearchOption.TopDirectoryOnly)
-                                                                                .Where(checkExlсudes).ToArray();
-
-            var resultItems = new List<FindResultItem>();
-
+        public IEnumerable<ResultItem> Find(string[] filesInDirectory)
+        {
 
             foreach (string filePath in filesInDirectory)
             {
@@ -74,6 +83,8 @@ namespace findandreplace
                 //Skip files that don't have matches
                 if (resultItem.IncludeInResultsList)
                     yield return resultItem;
+                else 
+                    yield return null;
 
             }
 

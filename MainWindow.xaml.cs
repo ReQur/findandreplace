@@ -1,21 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using CommunityToolkit.Mvvm.Input;
 
 namespace findandreplace
 {
@@ -54,6 +44,7 @@ namespace findandreplace
                 if (string.IsNullOrWhiteSpace(Dir)) return;
                 Result.Clear();
                 ItemsTotal = 0;
+                ItemsProcessed = 0;
                 _finder = new Finder();
                 _finder.Dir = Dir;
                 _finder.FileMask = FileMask;
@@ -64,24 +55,38 @@ namespace findandreplace
 
  
                 var context = TaskScheduler.FromCurrentSynchronizationContext();
-                Task.Run(() =>
+                Task.Run(() => _finder.GetFiles()).ContinueWith(res =>
+                {
+                    App.Current.Dispatcher.Invoke((Action)delegate
                     {
-                        foreach (var item in _finder.Find())
+                        ItemsTotal = res.Result.Length;
+                    });
+                    foreach (var item in _finder.Find(res.Result))
+                    {
+                        if (item != null)
                         {
                             App.Current.Dispatcher.Invoke((Action)delegate
                             {
                                 Result.Add(item);
-                                ItemsTotal++;
+                                ItemsProcessed++;
                             });
                         }
-                        
-                    });
+                        else
+                        {
+                            App.Current.Dispatcher.Invoke((Action)delegate
+                            {
+                                ItemsProcessed++;
+                            });
+                        }
+                    }
+                });
             });
             ReplaceCommand = new RelayCommand<string>(x =>
             {
                 if(string.IsNullOrWhiteSpace(Dir)) return;
                 Result.Clear();
                 ItemsTotal = 0;
+                ItemsProcessed = 0;
                 _finder = new Finder();
                 _finder.Dir = Dir;
                 _finder.FileMask = FileMask;
@@ -92,14 +97,18 @@ namespace findandreplace
                 _finder.ReplaceText = ReplaceText;
 
                 var context = TaskScheduler.FromCurrentSynchronizationContext();
-                Task.Run(() =>
+                Task.Run(() => _finder.GetFiles()).ContinueWith(res =>
                 {
-                    foreach (var item in _finder.Find())
+                    App.Current.Dispatcher.Invoke((Action)delegate
+                    {
+                        ItemsTotal = res.Result.Length;
+                    });
+                    foreach (var item in _finder.Find(res.Result))
                     {
                         App.Current.Dispatcher.Invoke((Action)delegate
                         {
                             Result.Add(item);
-                            ItemsTotal++;
+                            ItemsProcessed++;
                         });
                     }
                 });
@@ -203,7 +212,27 @@ namespace findandreplace
                 if (_itemsTotal == value) return;
                 _itemsTotal = value;
                 OnPropertyChanged(nameof(ItemsTotal));
+                OnPropertyChanged(nameof(ProcessText));
             }
+        }
+
+        private int _itemsProcessed = 0;
+        public int ItemsProcessed
+        {
+            get => _itemsProcessed;
+
+            set
+            {
+                if (_itemsProcessed == value) return;
+                _itemsProcessed = value;
+                OnPropertyChanged(nameof(ItemsProcessed));
+                OnPropertyChanged(nameof(ProcessText));
+            }
+        }
+
+        public string ProcessText
+        {
+            get => ItemsProcessed + " of "+ ItemsTotal;
         }
 
         public ObservableCollection<ResultItem> Result { get; }
