@@ -55,6 +55,7 @@ namespace findandreplace
 
  
                 var context = TaskScheduler.FromCurrentSynchronizationContext();
+                ButtonsUnlock = false;
                 Task.Run(() => _finder.GetFiles()).ContinueWith(res =>
                 {
                     App.Current.Dispatcher.Invoke((Action)delegate
@@ -79,7 +80,10 @@ namespace findandreplace
                             });
                         }
                     }
-                });
+                }).ContinueWith(_ =>
+                {
+                    ButtonsUnlock = true;
+                }, context);
             });
             ReplaceCommand = new RelayCommand<string>(x =>
             {
@@ -97,6 +101,7 @@ namespace findandreplace
                 _finder.ReplaceText = ReplaceText;
 
                 var context = TaskScheduler.FromCurrentSynchronizationContext();
+                ButtonsUnlock = false;
                 Task.Run(() => _finder.GetFiles()).ContinueWith(res =>
                 {
                     App.Current.Dispatcher.Invoke((Action)delegate
@@ -105,20 +110,32 @@ namespace findandreplace
                     });
                     foreach (var item in _finder.Find(res.Result))
                     {
-                        App.Current.Dispatcher.Invoke((Action)delegate
+                        if (item != null)
                         {
-                            Result.Add(item);
-                            ItemsProcessed++;
-                        });
+                            App.Current.Dispatcher.Invoke((Action)delegate
+                            {
+                                Result.Add(item);
+                                ItemsProcessed++;
+                            });
+                        }
+                        else
+                        {
+                            App.Current.Dispatcher.Invoke((Action)delegate
+                            {
+                                ItemsProcessed++;
+                            });
+                        }
                     }
-                });
+                }).ContinueWith(_ =>
+                {
+                    ButtonsUnlock = true;
+                }, context);
             });
         }
         public ICommand FindCommand { get; }
         public ICommand ReplaceCommand { get; }
         public ICommand BrowseCommand { get; }
-
-
+        
         private string _fileMask = "*.*";
         public string FileMask
         {
@@ -158,6 +175,20 @@ namespace findandreplace
 
                 _allDirSearch = value;
                 OnPropertyChanged(nameof(AllDirSearch));
+            }
+        }
+
+        private bool _buttonsUnlock = true;
+        public bool ButtonsUnlock
+        {
+            get => _buttonsUnlock;
+
+            set
+            {
+                if (_buttonsUnlock == value) return;
+
+                _buttonsUnlock = value;
+                OnPropertyChanged(nameof(ButtonsUnlock));
             }
         }
 

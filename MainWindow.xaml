@@ -77,7 +77,7 @@
         </TextBox>
         <Button Grid.Row="5" Grid.Column="2" 
                             Command="{Binding FindCommand}"
-                            CommandParameter="{Binding Dir}"
+                            IsEnabled="{Binding ButtonsUnlock}"
         >FindText</Button>
 
         <TextBlock Grid.Row="3" Grid.Column="5" HorizontalAlignment="left" VerticalAlignment="Bottom" >Replace to:</TextBlock>
@@ -88,7 +88,7 @@
         ></TextBox>
         <Button Grid.Row="5" Grid.Column="5"
                 Command="{Binding ReplaceCommand}"
-                CommandParameter="{Binding Dir}"
+                IsEnabled="{Binding ButtonsUnlock}"
         >Replace</Button>
 
         <ProgressBar Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="6" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"

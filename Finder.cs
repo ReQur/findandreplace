@@ -52,6 +52,7 @@ namespace findandreplace
             var excludeFlag = excludeMask.Length;
             foreach (var mask in excludeMask)
             {
+                if (mask.Length == 0) { excludeFlag--;  continue; }
                 if (mask[0] == ' ') mask.TrimStart(' ');
                 Regex maskExp = new Regex('.'+mask.Replace(".", "\\."));
 
