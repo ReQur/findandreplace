@@ -93,6 +93,8 @@
 
 
         <TextBlock Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom">Result:</TextBlock>
+        <TextBlock Grid.Row="6" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Bottom">ItemsTotal:</TextBlock>
+        <TextBlock Grid.Row="6" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Bottom" Text ="{Binding ItemsTotal}"/>
         <ListBox x:Name="ResultList" ItemsSource="{Binding Result}" ScrollViewer.PanningRatio="0" 
                  Grid.Column="1" Grid.ColumnSpan="6" Grid.Row="7" HorizontalAlignment="Stretch">
             <ListBox.ItemTemplate>

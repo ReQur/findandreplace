@@ -55,7 +55,7 @@ namespace findandreplace
             return excludeFlag == 0;
         }
 
-        public FindResult Find()
+        public IEnumerable<ResultItem> Find()
         {
 
             string[] filesInDirectory = Directory.GetFiles(Dir, 
@@ -73,12 +73,11 @@ namespace findandreplace
 
                 //Skip files that don't have matches
                 if (resultItem.IncludeInResultsList)
-                    resultItems.Add(resultItem);
+                    yield return resultItem;
 
             }
 
-
-            return new FindResult { Items = resultItems };
+            yield break;
         }
 
 		private FindResultItem FindInFile(string filePath)
