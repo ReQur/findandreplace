@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:findandreplace"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="900"
+        Title="MainWindow" Height="600" Width="900" MinWidth="630" MinHeight="490"
         d:DataContext="{d:DesignInstance local:MainViewModel}"
         >
 
@@ -91,7 +91,8 @@
                 CommandParameter="{Binding Dir}"
         >Replace</Button>
 
-
+        <ProgressBar Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="6" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
+                     Minimum="0" Maximum="{Binding ItemsTotal}" Value="{Binding ItemsProcessed}"></ProgressBar>
         <TextBlock Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom">Result:</TextBlock>
         <TextBlock Grid.Row="6" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Bottom">Items Processed:</TextBlock>
         <TextBlock Grid.Row="6" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Bottom" Text ="{Binding ProcessText}"/>
