@@ -53,6 +53,7 @@ namespace findandreplace
             {
                 if (string.IsNullOrWhiteSpace(Dir)) return;
                 Result.Clear();
+                ItemsTotal = 0;
                 _finder = new Finder();
                 _finder.Dir = Dir;
                 _finder.FileMask = FileMask;
@@ -61,21 +62,26 @@ namespace findandreplace
                 _finder.InAllDirectories = AllDirSearch;
                 _finder.IsReplace = false;
 
+ 
                 var context = TaskScheduler.FromCurrentSynchronizationContext();
-                Task.Run(() => _finder.Find()).ContinueWith(res =>
-                {
-                    foreach (var item in res.Result.Items)
+                Task.Run(() =>
                     {
-                        Result.Add(item);
-                    }
-                }, context);
-                
-
+                        foreach (var item in _finder.Find())
+                        {
+                            App.Current.Dispatcher.Invoke((Action)delegate
+                            {
+                                Result.Add(item);
+                                ItemsTotal++;
+                            });
+                        }
+                        
+                    });
             });
             ReplaceCommand = new RelayCommand<string>(x =>
             {
                 if(string.IsNullOrWhiteSpace(Dir)) return;
                 Result.Clear();
+                ItemsTotal = 0;
                 _finder = new Finder();
                 _finder.Dir = Dir;
                 _finder.FileMask = FileMask;
@@ -85,15 +91,18 @@ namespace findandreplace
                 _finder.IsReplace = true;
                 _finder.ReplaceText = ReplaceText;
 
-
                 var context = TaskScheduler.FromCurrentSynchronizationContext();
-                Task.Run(() => _finder.Find()).ContinueWith(res =>
+                Task.Run(() =>
                 {
-                    foreach (var item in res.Result.Items)
+                    foreach (var item in _finder.Find())
                     {
-                        Result.Add(item);
+                        App.Current.Dispatcher.Invoke((Action)delegate
+                        {
+                            Result.Add(item);
+                            ItemsTotal++;
+                        });
                     }
-                }, context);
+                });
             });
         }
         public ICommand FindCommand { get; }
@@ -158,7 +167,6 @@ namespace findandreplace
         }
 
         private string _findText = "";
-
         public string FindText
         {
             get => _findText;
@@ -172,7 +180,6 @@ namespace findandreplace
             }
         }
         private string _replaceText = "";
-
         public string ReplaceText
         {
             get => _replaceText;
@@ -183,6 +190,19 @@ namespace findandreplace
 
                 _replaceText = value;
                 OnPropertyChanged(nameof(ReplaceText));
+            }
+        }
+
+        private int _itemsTotal = 0;
+        public int ItemsTotal
+        {
+            get => _itemsTotal;
+
+            set
+            {
+                if (_itemsTotal == value) return;
+                _itemsTotal = value;
+                OnPropertyChanged(nameof(ItemsTotal));
             }
         }
 
