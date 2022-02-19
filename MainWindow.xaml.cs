@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -30,6 +31,8 @@ namespace findandreplace
         public MainViewModel()
         {
             Result = new ObservableCollection<ResultItem>();
+            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+            CancellationToken token;
 
             BrowseCommand = new RelayCommand<string>(x =>
             {
@@ -63,44 +66,57 @@ namespace findandreplace
                     _finder.IsReplace = true;
                     _finder.ReplaceText = ReplaceText;
                 }
-
+                
                 var context = TaskScheduler.FromCurrentSynchronizationContext();
                 ButtonsUnlock = false;
+                token = cancelTokenSource.Token;
+                ProcessState = "Pending";
                 Task.Run(() => _finder.GetFiles()).ContinueWith(res =>
                 {
                     App.Current.Dispatcher.Invoke((Action)delegate
                     {
                         ItemsTotal = res.Result.Length;
+                        ProcessState = "Processing";
                     });
                     foreach (var item in _finder.Find(res.Result))
                     {
+                        if (token.IsCancellationRequested)
+                        {
+                            break;
+                        }
                         if (item != null)
                         {
                             App.Current.Dispatcher.Invoke((Action)delegate
                             {
                                 Result.Add(item);
-                                ItemsProcessed++;
                             });
                         }
-                        else
+                        App.Current.Dispatcher.Invoke((Action)delegate
                         {
-                            App.Current.Dispatcher.Invoke((Action)delegate
-                            {
-                                ItemsProcessed++;
-                            });
-                        }
+                            ItemsProcessed++;
+                        });
                     }
-                }).ContinueWith(_ =>
+                }, token).ContinueWith(_ =>
                 {
                     ButtonsUnlock = true;
+                    cancelTokenSource.Dispose();
+                    cancelTokenSource = new CancellationTokenSource();
+                    ProcessState = "Waiting";
                 }, context);
             });
-            
+
+            CancelCommand = new RelayCommand<string>(x =>
+            {
+                if (x != "Processing") return;
+                cancelTokenSource.Cancel();
+                ItemsTotal = ItemsProcessed;
+            });
         }
 
         public ICommand StartFinderCommand { get; }
         public ICommand BrowseCommand { get; }
-        
+        public ICommand CancelCommand { get; }
+
         private string _fileMask = "*.*";
         public string FileMask
         {
@@ -207,6 +223,20 @@ namespace findandreplace
 
                 _replaceText = value;
                 OnPropertyChanged(nameof(ReplaceText));
+            }
+        }
+
+        private string _processState = "Waiting";
+        public string ProcessState
+        {
+            get => _processState;
+
+            set
+            {
+                if (_processState == value) return;
+
+                _processState = value;
+                OnPropertyChanged(nameof(ProcessState));
             }
         }
 

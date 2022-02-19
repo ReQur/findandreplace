@@ -100,6 +100,11 @@
         <TextBlock Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom">Result:</TextBlock>
         <TextBlock Grid.Row="6" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Bottom">Items Processed:</TextBlock>
         <TextBlock Grid.Row="6" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Bottom" Text ="{Binding ProcessText}"/>
+        <TextBlock Grid.Row="6" Grid.Column="6" HorizontalAlignment="Left" VerticalAlignment="Bottom" Text ="{Binding ProcessState}"/>
+        <Button Grid.Row="6" Grid.Column="6" HorizontalAlignment="Right" Background="Crimson"
+                Command="{Binding CancelCommand}"
+                CommandParameter="{Binding ProcessState}"
+        >Cancel</Button>
         <ListBox x:Name="ResultList" ItemsSource="{Binding Result}" ScrollViewer.PanningRatio="0" 
                  Grid.Column="1" Grid.ColumnSpan="6" Grid.Row="7" HorizontalAlignment="Stretch">
             <ListBox.ItemTemplate>
