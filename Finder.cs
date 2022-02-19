@@ -67,10 +67,34 @@ namespace findandreplace
 
         public string[] GetFiles()
         {
+
+            return InAllDirectories ? 
+                GetAllSafeFiles() : GetFilesFromTop();
+        }
+
+        private string[] GetFilesFromTop()
+        {
             return Directory.GetFiles(Dir,
                     FileMask,
-                                InAllDirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
-                                .Where(checkExlсudes).ToArray();
+                    SearchOption.TopDirectoryOnly)
+                .Where(checkExlсudes).ToArray();
+        }
+
+        private string[] GetAllSafeFiles()
+        {
+            List<string> allFiles = new List<string>();
+            string[] root = Directory.GetFiles(Dir, FileMask).ToArray();
+            allFiles.AddRange(root);
+            string[] folders = Directory.GetDirectories(Dir);
+            foreach (string folder in folders)
+            {
+                try
+                {
+                    allFiles.AddRange(Directory.GetFiles(folder, FileMask, SearchOption.AllDirectories));
+                }
+                catch { } // Don't know what the problem is, don't care...
+            }
+            return allFiles.Where(checkExlсudes).ToArray();
         }
 
         public IEnumerable<ResultItem> Find(string[] filesInDirectory)
@@ -105,6 +129,14 @@ namespace findandreplace
             List<string> findTextLines = FindText.Split("\r\n").ToList();
             var linesLength = findTextLines.Count;
             List<string> fileLines = new List<string>(linesLength);
+            try
+            {
+                File.OpenRead(resultItem.FilePath);
+            }
+            catch
+            {
+                return resultItem;
+            }
             foreach (string line in File.ReadLines(resultItem.FilePath))
             {
                 fileLines.Add(line);
@@ -139,6 +171,14 @@ namespace findandreplace
             List<string> findTextLines = FindText.Split("\r\n").ToList();
             var linesLength = findTextLines.Count;
             List<string> fileLines = new List<string>(linesLength);
+            try
+            {
+                File.OpenRead(resultItem.FilePath);
+            }
+            catch
+            {
+                return resultItem;
+            }
             using (StreamWriter sw = File.CreateText(filePath + ".FNRTEMP"))
             {
                 foreach (string line in File.ReadLines(resultItem.FilePath))

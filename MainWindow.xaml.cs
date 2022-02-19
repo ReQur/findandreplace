@@ -167,15 +167,16 @@ namespace findandreplace
                 if (_dir == value) return;
                 _dir = value;
 
-                if (Directory.Exists(Dir))
+                try
                 {
+                    Directory.GetFiles(Dir, FileMask, SearchOption.TopDirectoryOnly);
                     ButtonsUnlock = true;
                     _errorsDictionary[nameof(Dir)] = null;
                 }
-                else
+                catch (Exception ex)
                 {
                     ButtonsUnlock = false;
-                    _errorsDictionary[nameof(Dir)] = "Invalid directory";
+                    _errorsDictionary[nameof(Dir)] = ex.Message;
                 }
 
                 OnPropertyChanged(nameof(Dir));
