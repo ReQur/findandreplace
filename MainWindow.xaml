@@ -53,7 +53,9 @@
 
    
         <TextBlock Grid.Row="0" Grid.Column="1">Dir:</TextBlock>
-        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" FontSize="18" Text="{Binding Dir}"></TextBox>
+        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" FontSize="18" 
+                 Text="{Binding Dir, UpdateSourceTrigger=PropertyChanged, 
+                        ValidatesOnDataErrors=True, NotifyOnValidationError=True}"></TextBox>
         <Button Grid.Row="1" Grid.Column="4" Command="{Binding BrowseCommand}">Browse</Button>
 
         <TextBlock Grid.Row="2" Grid.Column="1">Search in all directories:</TextBlock>

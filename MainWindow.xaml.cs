@@ -1,7 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,7 +24,7 @@ namespace findandreplace
         }
     }
 
-    public class MainViewModel : INotifyPropertyChanged
+    public class MainViewModel : INotifyPropertyChanged, IDataErrorInfo
     {
         private Finder _finder;
         public MainViewModel()
@@ -140,7 +143,7 @@ namespace findandreplace
             }
         }
 
-        private bool _buttonsUnlock = true;
+        private bool _buttonsUnlock = false;
         public bool ButtonsUnlock
         {
             get => _buttonsUnlock;
@@ -162,8 +165,19 @@ namespace findandreplace
             set
             {
                 if (_dir == value) return;
-
                 _dir = value;
+
+                if (Directory.Exists(Dir))
+                {
+                    ButtonsUnlock = true;
+                    _errorsDictionary[nameof(Dir)] = null;
+                }
+                else
+                {
+                    ButtonsUnlock = false;
+                    _errorsDictionary[nameof(Dir)] = "Invalid directory";
+                }
+
                 OnPropertyChanged(nameof(Dir));
             }
         }
@@ -236,6 +250,18 @@ namespace findandreplace
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        private Dictionary<string, string> _errorsDictionary = new Dictionary<string, string>();
+
+        public string Error
+        {
+            get
+            {
+                return string.Join(Environment.NewLine,
+                    _errorsDictionary.Values.Where(x => string.IsNullOrWhiteSpace(x) == false));
+            }
+        }
+        public string this[string equat] => _errorsDictionary.TryGetValue(equat, out var error) ? error : null;
 
     }
 
